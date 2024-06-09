@@ -19,6 +19,7 @@
     {{!-- this will be the area where the user can input their own rating --}}
     {{!-- This will be a future feature --}}
     <div class="star-rating">
+        <form id="rating-form" action="/submit-rating" method="POST">
         <input type ='radio' name='rate' id='rate-5'>
         <label for='rate-5' class="fas fa-star"></label>
         <input type ='radio' name='rate' id='rate-4'>
@@ -29,14 +30,15 @@
         <label for='rate-2' class="fas fa-star"></label>
         <input type ='radio' name='rate' id='rate-1'>
         <label for='rate-1' class="fas fa-star"></label>
-        <form action ='#'>
-            <header></header>
-            <div class="div textarea">
-                <textarea cols="30" placeholder="Give us some thoughts, Stay Frosty"></textarea>
-            </div>
-            <div class="btn">
-                <button type="submit">Send Us The Feedback</button>
-            </div>
+            <form action ='#'>
+                <header></header>
+                <div class="div textarea">
+                    <textarea cols="30" placeholder="Give us some thoughts, Stay Frosty"></textarea>
+                </div>
+                <div class="btn">
+                    <button type="submit">Send Us The Feedback</button>
+                </div>
+            </form>
         </form>
     </div>
 </div>
