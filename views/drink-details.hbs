@@ -1,15 +1,93 @@
-<div class="logo">{{> logo}}</div>
-<div class="nav">{{> nav-bar}}</div>
-<div class="artDeco">{{> art-deco}}</div>
+{{!-- <div class="artDeco">{{> art-deco}}</div>
+<div class="artDeco2">{{> art-deco2}}</div> --}}
+{{!-- {{> borderLine}} --}}
+{{> borderLine}}
+{{> borderLineRight}}
 
-<div class="drink-details">
-    <h4>{{name}}</h4>
-    <p>Spirit Type: {{spirit}}</p>
-    <p>Spirit Amount: {{amount}} OZ</p>
-    <p>Ingredients: {{ingredients}}</p>
-    <p>Instructions: {{instructions}}</p><br>
-    <p>Rating: ⭐⭐⭐⭐⭐</p> 
-    {{!-- this will be the area where the user can input their own rating --}}
-    {{!-- This will be a future feature --}}
-</div>
 
+<div class="container detail-container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mb-4 drink-details">
+                <div class="row no-gutters drink-details-container">
+                    <div class="col-md-4 card-detail-img-container">
+                        <img src="{{image}}" class="card-img card-detail-img" alt="The Cocktail of Choice">
+                        <button class="favorite-btn">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body drink-info">
+                            <h4 class="card-title">{{name}}</h4>
+                            <p class="card-text">Rating: ⭐⭐⭐⭐⭐</p>
+                            <p class="card-text">Spirit Type: {{spirit}}</p>
+                            <p class="card-text">Spirit Amount: {{amount}} OZ</p>
+                            <p class="card-text">Ingredients: {{ingredients}}</p>
+                            <p class="card-text">Instructions: {{instructions}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+                    <div class="card mb-4 comment-rating-card">
+                        <div class="card-body">
+                            {{!-- content goes here --}}
+                            <p class="card-text">Rating: ⭐⭐⭐⭐⭐</p>
+                            <p>COMMENTS HERE PLEASE AND THANKS YOU</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4 comment-rating-card">
+                        <div class="card-body">
+                            {{!-- content goes here --}}
+                            <p class="card-text">Rating: ⭐⭐⭐⭐⭐</p>
+                            <p>COMMENTS HERE PLEASE AND THANKS YOU</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4 comment-rating-card">
+                        <div class="card-body">
+                            {{!-- content goes here --}}
+                            <p class="card-text">Rating: ⭐⭐⭐⭐⭐</p>
+                            <p>COMMENTS HERE PLEASE AND THANKS YOU</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4 rating-comments">
+                <div class="card-body">
+                    <h4 class="card-title">How did you like this drink?</h4>
+                    <div class="star-rating">
+                        <form id="rating-form" action="/submit-rating" method="POST">
+                            <input type='radio' name='rate' id='rate-5'>
+                            <label for='rate-5' class="fas fa-star"></label>
+                            <input type='radio' name='rate' id='rate-4'>
+                            <label for='rate-4' class="fas fa-star"></label>
+                            <input type='radio' name='rate' id='rate-3'>
+                            <label for='rate-3' class="fas fa-star"></label>
+                            <input type='radio' name='rate' id='rate-2'>
+                            <label for='rate-2' class="fas fa-star"></label>
+                            <input type='radio' name='rate' id='rate-1'>
+                            <label for='rate-1' class="fas fa-star"></label>
+                            <form action='#'>
+                                <header></header>
+                                <div class="div textarea">
+                                    <textarea cols="30" placeholder="Give us some thoughts, Stay Frosty"></textarea>
+                                </div>
+                                <div class="btn">
+                                    <button type="submit">Send Us The Feedback</button>
+                                </div>
+                            </form>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/drink-details.js"></script>

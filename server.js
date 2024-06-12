@@ -15,6 +15,24 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const saltRounds = 10;
 
+//stuff Eddie tested out with Ryan
+// const SequelizeStore = require('connect-session-sequelize')(session.Store);
+// const sess = {
+//   secret: 'Super secret secret',
+//   cookie: {
+//     maxAge: 300000,
+//     httpOnly: true,
+//     secure: false,
+//     sameSite: 'strict',
+//   },
+//   resave: false,
+//   saveUninitialized: true,
+//   store: new SequelizeStore({
+//     db: sequelize
+//   })
+// };
+// app.use(session(sess));
+
 // I am consolidating my code here to make it easier to read and understand. DO NOT MOVE OR MODIFY
 // ANYTHING BELOW THIS LINE. - Zachary Testing
 
@@ -22,7 +40,7 @@ const saltRounds = 10;
 const db = require("./config/database");
 
 //Test database connection
-db.authenticate()
+db.sync()
   .then(() => console.log("Database connected..."))
   .catch((err) => console.log("Error: " + err));
 
@@ -65,6 +83,9 @@ const hbs = exphbs.create({
       }
       return arr.slice(0, limit);
     },
+    encodeURIComponent: function (str) {
+      return encodeURIComponent(str);
+    }
   },
 });
 
@@ -75,7 +96,8 @@ app.set("views", path.join(__dirname, "views"));
 // Handlebar page routes
 app.use("/", mainRoutes);
 
-// Initialize PostgreSQL database connection
+//Start of user login/registration
+
 const pool = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
@@ -89,9 +111,15 @@ initializePassport(passport, pool);
 // Express session middleware
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SECRET_KEY,
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000 // 1 day in milliseconds
+    }
   })
 );
 
@@ -110,24 +138,43 @@ function checkAuthenticated(req, res, next) {
 // Middleware to check if user is not authenticated
 function checkNotAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
-    return res.redirect("/dashboard");
+    return res.redirect("/drink-search");
   }
   next();
 }
 
+
 // Route to render main page
 app.get("/", checkNotAuthenticated, (req, res) => {
-  res.render("main", { title: "Home" });
+  res.render("main", { title: "Home", isAuthenticated: req.isAuthenticated() });
+});
+
+// Route to render drink search page
+app.get("/drink-search", checkAuthenticated, (req, res) => {
+  res.render("drink-search", { title: "Drink Search", isAuthenticated: req.isAuthenticated() });
 });
 
 // Route to handle login
-app.post(
-  "/login",
-  passport.authenticate("local", {
-    successRedirect: "/drink-search",
-    failureRedirect: "/",
-  })
-);
+app.post("/login", (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) {
+      console.error("Error during authentication:", err);
+      return next(err);
+    }
+    if (!user) {
+      console.log("Authentication failed:", info.message);
+      return res.redirect("/");
+    }
+    req.logIn(user, (err) => {
+      if (err) {
+        console.error("Error during login:", err);
+        return next(err);
+      }
+      console.log("Authentication successful, user logged in:", user.username);
+      return res.redirect("/drink-search");
+    });
+  })(req, res, next);
+});
 
 // Route to handle registration
 app.post("/register", async (req, res) => {
@@ -154,7 +201,7 @@ app.post("/register", async (req, res) => {
       return res.redirect("/");
     }
 
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const hashedPassword = await bcrypt.hash(password, 10);
     console.log("Hashed password:", hashedPassword);
     await pool.query(
       "INSERT INTO public.login (username, passwd, email, dob) VALUES ($1, $2, $3, $4)",
@@ -167,11 +214,6 @@ app.post("/register", async (req, res) => {
     res.redirect("/");
   }
 });
-
-// Route to handle dashboard
-app.get("/dashboard", checkAuthenticated, (req, res) =>
-  res.send("Welcome to the dashboard!")
-);
 
 // Route to handle logout
 app.get("/logout", (req, res) => {
